@@ -6,6 +6,8 @@ window.onload = function() {
    ctx.drawImage(img, 10, 10);
 };
 
+// -- Pan Functions  ---------------------------------------------------------
+
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext('2d');
 var dragging = false;
@@ -14,71 +16,83 @@ var lastY;
 var marginLeft = 0;
 var marginTop = 0;
 
+function start_pan(from_x, from_y)
+{
+    dragging = true;
+    lastX = from_x;
+    lastY = from_y;
+}
+
+function update_pan(cur_x, cur_y)
+{
+    if (dragging)
+    {
+        var deltaX = cur_x - lastX;
+        lastX = cur_x;
+        marginLeft = Math.max(marginLeft + deltaX, 0);
+        canvas.style.marginLeft = marginLeft + "px";
+
+        var deltaY = cur_y- lastY;
+        lastY = cur_y;
+        marginTop = Math.max(marginTop + deltaY, 0);
+        canvas.style.marginTop = marginTop + "px";
+
+        // Debug:
+        document.getElementById("dx").innerHTML = Math.round(marginLeft);
+        document.getElementById("dy").innerHTML = Math.round(marginTop);
+    }
+}
+
+function finsh_pan()
+{
+    dragging = false;
+}
+
+
+// -- Listeners fpr mouse panning
+
 canvas.addEventListener('mousedown', function(e) {
     var evt = e || event;
-    dragging = true;
-    lastX = evt.clientX;
-    lastY = evt.clientY;
+    start_pan(evt.clientX, evt.clientY);
     e.preventDefault();
 }, false);
 
 window.addEventListener('mousemove', function(e) {
     var evt = e || event;
-    if (dragging) {
-
-        var deltaX = evt.clientX - lastX;
-        lastX = evt.clientX;
-        marginLeft += deltaX;
-        canvas.style.marginLeft = marginLeft + "px";
-
-        var deltaY = evt.clientY- lastY;
-        lastY = evt.clientY;
-        marginTop += deltaY;
-        canvas.style.marginTop = marginTop + "px";
-    }
+    update_pan(evt.clientX, evt.clientY);
     e.preventDefault();
 }, false);
 
 window.addEventListener('mouseup', function() {
-    dragging = false;
+    finsh_pan();
 }, false);
 
-// Touch
+// -- Listeners for Touch Panning
 
 canvas.addEventListener('touchstart', function(e) {
     var evt = e || event;
-   	var touch = evt.touches[0];
-
-    dragging = true;
-    lastX = touch.clientX;
-    lastY = touch.clientY;
-    e.preventDefault();
+    if (evt.touches.length == 1)
+    {
+   	    var touch = evt.touches[0];
+        start_pan(touch.clientX, touch.clientY);
+        e.preventDefault();
+    }
 }, false);
 
 window.addEventListener('touchmove', function(e) {
     var evt = e || event;
-    if (dragging) {
-
-    	var touch = evt.touches[0];
-
-        var deltaX = touch.clientX - lastX;
-        lastX = touch.clientX;
-        marginLeft = Math.min(marginLeft + deltaX, 0);
-        canvas.style.marginLeft = marginLeft + "px";
-
-        var deltaY = touch.clientY- lastY;
-        lastY = touch.clientY;
-        marginTop = Math.min(marginTop + deltaY, 0);
-        canvas.style.marginTop = marginTop + "px";
-
-        document.getElementById("dx").innerHTML = Math.round(marginLeft);
-        document.getElementById("dy").innerHTML = Math.round(marginTop);
+    if (evt.touches.length == 1)
+    {
+        var touch = evt.touches[0];
+        update_pan(touch.clientX, touch.clientY);
+        e.preventDefault();
     }
-    e.preventDefault();
 }, false);
 
-window.addEventListener('touchend', function() {
-    dragging = false;
+window.addEventListener('touchend', function(e) {
+    var evt = e || event;
+    finsh_pan();
+    e.preventDefault();
 }, false);
 
 
