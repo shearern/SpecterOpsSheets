@@ -6,9 +6,30 @@ window.onload = function() {
    ctx.drawImage(img, 10, 10);
 };
 
-// -- Pan Functions  ---------------------------------------------------------
+// -- Globals ----------------------------------------------------------------
 
 var canvas = document.getElementById("myCanvas");
+var canvas_container = document.getElementById("canvasdiv");
+
+
+// -- Canvas auto-sizing -----------------------------------------------------
+
+
+function autosize_canvas()
+{
+    var w = window.innerWidth - 15;
+    var h = window.innerHeight - 100;
+    canvas_container.style.width = w + "px";
+    canvas_container.style.height = h + "px";
+}
+window.onresize = function(event)
+{
+    autosize_canvas();
+}
+autosize_canvas();
+
+// -- Pan Functions  ---------------------------------------------------------
+
 var context = canvas.getContext('2d');
 var dragging = false;
 var lastX;
@@ -29,12 +50,12 @@ function update_pan(cur_x, cur_y)
     {
         var deltaX = cur_x - lastX;
         lastX = cur_x;
-        marginLeft = Math.max(marginLeft + deltaX, 0);
+        marginLeft = Math.min(marginLeft + deltaX, 0);
         canvas.style.marginLeft = marginLeft + "px";
 
         var deltaY = cur_y- lastY;
         lastY = cur_y;
-        marginTop = Math.max(marginTop + deltaY, 0);
+        marginTop = Math.min(marginTop + deltaY, 0);
         canvas.style.marginTop = marginTop + "px";
 
         // Debug:
