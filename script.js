@@ -48,14 +48,20 @@ function update_pan(cur_x, cur_y)
 {
     if (dragging)
     {
+        var min_margin_left = canvas_container.offsetWidth - canvas.offsetWidth;
+
         var deltaX = cur_x - lastX;
         lastX = cur_x;
         marginLeft = Math.min(marginLeft + deltaX, 0);
+        marginLeft = Math.max(min_margin_left, marginLeft);
         canvas.style.marginLeft = marginLeft + "px";
+
+        var min_margin_top = canvas_container.offsetHeight - canvas.offsetHeight;
 
         var deltaY = cur_y- lastY;
         lastY = cur_y;
         marginTop = Math.min(marginTop + deltaY, 0);
+        marginTop = Math.max(min_margin_top, marginTop);
         canvas.style.marginTop = marginTop + "px";
 
         // Debug:
